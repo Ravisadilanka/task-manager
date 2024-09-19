@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { Button, Form, Input, Modal, Select, Space, Table } from "antd";
 import type { TableProps } from "antd";
 import { EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../redux/store";
+import { deleteTask, updateTask } from "../redux/features/taskSlice";
 
 interface DataType {
   key: string;
@@ -11,12 +14,10 @@ interface DataType {
   date: string;
 }
 
-interface TaskListProps {
-  tasks: DataType[];
-  setTasks: React.Dispatch<React.SetStateAction<DataType[]>>;
-}
+const TaskList: React.FC = () => {
+  const tasks = useSelector((state: RootState) => state.tasks.tasks);
+  const dispatch: AppDispatch = useDispatch();
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingTask, setEditingTask] = useState<DataType | null>(null);
   const [form] = Form.useForm();
@@ -33,18 +34,17 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks }) => {
 
   const saveEdit = () => {
     form.validateFields().then((values) => {
-      const updatedTasks = tasks.map((task) =>
-        task.key === editingTask?.key ? { ...task, ...values } : task
-      );
-      setTasks(updatedTasks);
+      if (editingTask) {
+        const updatedTask = { ...editingTask, ...values };
+        dispatch(updateTask(updatedTask));
+      }
       setIsEditing(false);
       setEditingTask(null);
     });
   };
 
-  const deleteTask = (key: string) => {
-    const updatedTasks = tasks.filter((task) => task.key !== key);
-    setTasks(updatedTasks);
+  const deleteTaskById = (key: string) => {
+    dispatch(deleteTask(key));
   };
 
   const columns: TableProps<DataType>["columns"] = [
@@ -66,8 +66,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks }) => {
       render: (text: string) => (
         <span
           style={{
-            color:
-              text == "High" ? "red" : text == "Normal" ? "green" : "blue",
+            color: text == "High" ? "red" : text == "Normal" ? "green" : "blue",
           }}
         >
           {text}
@@ -75,10 +74,13 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks }) => {
       ),
       filters: [
         { text: <span style={{ color: "red" }}>High</span>, value: "High" },
-        { text: <span style={{ color: "green" }}>Normal</span>, value: "Normal" },
+        {
+          text: <span style={{ color: "green" }}>Normal</span>,
+          value: "Normal",
+        },
         { text: <span style={{ color: "blue" }}>Low</span>, value: "Low" },
       ],
-      onFilter: (value, record) => record.priority.includes(value as string)
+      onFilter: (value, record) => record.priority.includes(value as string),
     },
     {
       title: "Date",
@@ -93,8 +95,11 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks }) => {
           <Button onClick={() => editTask(record)}>
             <EditTwoTone />
           </Button>
-          <Button danger onClick={() => deleteTask(record.key)}>
-            <DeleteTwoTone twoToneColor="red" />
+          <Button danger>
+            <DeleteTwoTone
+              twoToneColor="red"
+              onClick={() => deleteTaskById(record.key)}
+            />
           </Button>
         </Space>
       ),

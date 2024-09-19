@@ -14,16 +14,12 @@ interface Task {
 const Home: React.FC = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
 
-  const addTask = (newTask: Task) => {
-    setTasks([...tasks, newTask]);
-  }
+ 
   return (
     <div style={{ justifyContent: "center", textAlign: 'center' }}>
         <Title>Tasks List</Title>
-
-        <TaskForm onAddTask={addTask} />
-
-        <TaskList tasks={tasks} setTasks={setTasks}/>
+        <TaskForm/>
+        <TaskList />
     </div>
   );
 };

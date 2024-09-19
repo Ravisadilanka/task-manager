@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { Form, Input, Select, Cascader, DatePicker, Button, message } from "antd";
+import { AppDispatch } from "../redux/store";
+import { useDispatch } from "react-redux";
+import { addTask } from "../redux/features/taskSlice";
 
 interface Task {
   key: string;
@@ -9,11 +12,11 @@ interface Task {
   date: string;
 }
 
-interface TaskFormProps {
-  onAddTask: (task: Task) => void;
-}
 
-const TaskForm: React.FC<TaskFormProps> = ({ onAddTask }) => {
+
+const TaskForm: React.FC = () => {
+
+  const dispatch : AppDispatch =  useDispatch() 
   const [componentSize, setComponentSize] = useState<'middle' | 'small' | 'large'>('middle'); // Changed 'default' to 'middle'
 
   const onFormLayoutChange = ({ size }: { size: 'middle' | 'small' | 'large' }) => {
@@ -32,7 +35,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onAddTask }) => {
       date: formattedDate 
     };
     
-    onAddTask(newTask);
+    dispatch(addTask(newTask));
     message.success('Task added successfully!');
   };
 
