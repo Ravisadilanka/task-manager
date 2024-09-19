@@ -1,6 +1,7 @@
 import Title from "antd/es/typography/Title";
 import React, { useState } from "react";
 import TaskForm from "../components/TaskForm";
+import TaskList from "../components/TaskList";
 
 interface Task {
     key: string;
@@ -21,6 +22,8 @@ const Home: React.FC = () => {
         <Title>Tasks List</Title>
 
         <TaskForm onAddTask={addTask} />
+
+        <TaskList tasks={tasks} setTasks={setTasks}/>
     </div>
   );
 };
