@@ -1,10 +1,19 @@
-import React from 'react';
-
+import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
+import LayoutComponent from "./layout/Layout";
 
 function App() {
   return (
-    <div className="App">
-    </div>
+    <>
+      <BrowserRouter>
+        <LayoutComponent>
+          <Routes>
+            <Route path="/" element={<Home />} />
+          </Routes>
+        </LayoutComponent>
+      </BrowserRouter>
+    </>
   );
 }
 
